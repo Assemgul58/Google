@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Свадебное приглашение</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #fff200, #a9a9a9);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 2rem auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      padding: 2rem;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #ffcc00;
+    }
+    p {
+      text-align: center;
+      font-size: 1.2rem;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    input, select, button {
+      padding: 0.8rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #ffcc00;
+      color: #333;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e6b800;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Приглашение на свадьбу</h1>
+    <h2>Алмагуль и Данияра</h2>
+    <p>Дорогие гости! Мы рады пригласить вас на нашу свадьбу. Пожалуйста, подтвердите свое присутствие.</p>
+    <form id="rsvp-form">
+      <input type="text" id="name" name="name" placeholder="Ваше имя" required />
+      <select id="attendance" name="attendance">
+        <option value="Приду">С радостью приду</option>
+        <option value="К сожалению, не смогу прийти">К сожалению, не смогу прийти</option>
+      </select>
+      <button type="submit">Отправить</button>
+    </form>
+    <p id="response-message" style="text-align: center; font-weight: bold;"></p>
+  </div>
+
+  <script>
+    document.getElementById("rsvp-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const name = document.querySelector("input[name='name']").value.trim();
+      const attending = document.querySelector("input[name='attending']:checked").value;
+
+      // Telegram
+      fetch("https://api.telegram.org/bot7824892889:AAEsxI51ngbcc9IT_SBz1uFXk2uWrjIDftQ/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: "112409",
+          text: `🎉 Новое подтверждение!\n👤 Имя: ${name}\n📍 Статус: ${attending}`
+        })
+      });
+
+      // Google Sheets
+      fetch("https://script.google.com/macros/s/AKfycbwY0tb4u9wZwwx_p6PGfMLkMe9Z5xYHzeIOHRQ9Ry5fX72evLHvjbyQ-uJlm53unlDf/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `name=${encodeURIComponent(name)}&attending=${encodeURIComponent(attending)}`
+      });
+
+      // Показать подтверждение
+      document.getElementById("confirmation-msg").textContent = "Спасибо! Ваш ответ получен.";
+      document.getElementById("rsvp-form").reset();
+    });
+  </script>
+</body>
+</html>
